@@ -1,0 +1,61 @@
+-- Write a SQL query that orders the items by price
+
+SELECT *
+FROM superstore
+ORDER BY price;
+
+
+-- Write your own SQL query that will show a statistic about the item prices, like a sum, average, minimum, maximum, or count.
+
+SELECT COUNT(category), category
+FROM superstore
+GROUP BY category;
+
+SELECT MIN(price), category
+FROM superstore
+GROUP BY category;
+
+SELECT item_name, category, price, stock_quantity, average_rating
+FROM superstore 
+WHERE average_rating >= 4.50
+ORDER BY stock_quantity DESC;
+
+
+-- Write your own SQL query that will show a statistic about the price for items in the category of "Kitchen Supplies".
+
+SELECT item_name, category, price
+FROM superstore
+WHERE category='Kitchen Supplies'
+ORDER BY price;
+
+SELECT MIN(price), MAX(price), AVG(price), category
+FROM superstore
+WHERE category='Kitchen Supplies'
+GROUP BY category;
+
+
+-- Come up with your own question about the data and try to answer it using SQL. 
+
+-- How many air purifiers are in stock?
+SELECT item_name, stock_quantity
+FROM superstore
+WHERE item_name='Air Purifier'
+ORDER BY stock_quantity;
+
+-- What items are in the Appliance Sections and what are the prices?
+SELECT item_name, price
+FROM superstore
+WHERE category='Appliances'
+ORDER BY price DESC;
+
+-- What items have a rating higher then 4.8
+SELECT item_name, average_rating, price, stock_quantity
+FROM superstore
+WHERE average_rating >=4.8
+ORDER BY average_rating DESC;
+
+-- What are the 5 cheapest items
+SELECT *
+FROM superstore
+ORDER BY price
+LIMIT 5;
