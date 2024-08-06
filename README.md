@@ -1,2 +1,2 @@
 # SQL
-SQL Projects From Course
+SQL Portfolio
