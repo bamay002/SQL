@@ -1,0 +1,161 @@
+# In this SQL, I'm querying a database with multiple tables in it to analyze interrelated data across employee, customer, 
+# invoice, artist, album, track, and playlist tables to explore relationships within a media and customer invoicing database.
+
+# Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT 
+CustomerId,
+FirstName,
+LastName,
+Country
+FROM chinook.customers
+WHERE Country <> 'USA';
+
+# Show only the Customers from Brazil.
+SELECT *
+FROM chinook.customers
+WHERE Country = 'Brazil';
+
+# Find the Invoices of customers who are from Brazil. The resulting table should show the customers full name, Invoice ID, Date of the invoice, and billing country.
+SELECT
+invoices.InvoiceId,
+customers.FirstName,
+customers.LastName,
+invoices.InvoiceDate,
+invoices.BillingCountry
+FROM chinook.invoices
+LEFT JOIN chinook.customers
+ON invoices.CustomerId = customers.CustomerId
+WHERE invoices.BillingCountry = 'Brazil' ;
+
+# Show the Employees who are Sales Agents.
+SELECT *
+FROM chinook.employees
+WHERE Title = 'Sales Support Agent';
+
+# Find a unique/distinct list of billing countries from the Invoice table.
+SELECT DISTINCT BillingCountry
+FROM chinook.invoices;
+
+# Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT
+employees.LastName,
+employees.FirstName,
+invoices.InvoiceId
+FROM chinook.employees
+INNER JOIN chinook.customers
+ON employees.EmployeeId = customers.SupportRepId
+INNER JOIN chinook.invoices
+ON customers.CustomerId = invoices.CustomerId;
+
+# Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT
+employees.LastName,
+employees.FirstName,
+customers.FirstName,
+customers.LastName,
+customers.Country,
+invoices.Total
+FROM chinook.employees
+INNER JOIN chinook.customers
+ON employees.EmployeeId = customers.SupportRepId
+INNER JOIN chinook.invoices
+ON customers.CustomerId = invoices.CustomerId;
+
+# How many Invoices were there in 2009?
+SELECT
+COUNT(InvoiceId)
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '2009%';
+
+# What are the total sales for 2009?
+SELECT
+SUM(Total)
+FROM chinook.invoices
+WHERE InvoiceDate LIKE '2009%';;
+
+# Write a query that includes the purchased track name with each invoice line ID.
+SELECT 
+tracks.Name,
+invoice_items.InvoiceLineId
+FROM chinook.tracks
+INNER JOIN chinook.invoice_items
+ON tracks.TrackId = invoice_items.TrackId;
+
+# Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT
+tracks.Name AS Track,
+artists.Name AS Artist,
+invoice_items.InvoiceLineId
+FROM chinook.tracks
+LEFT JOIN chinook.invoice_items
+ON tracks.TrackId = invoice_items.TrackId
+INNER JOIN chinook.albums
+ON tracks.AlbumId = albums.AlbumId
+LEFT JOIN chinook.artists
+ON albums.ArtistId = artists.ArtistId;
+
+# Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT  
+tracks.Name AS Artist,
+albums.Title AS Album,
+media_types.Name AS Media,
+genres.Name AS Genre
+FROM chinook.media_types
+INNER JOIN chinook.tracks
+ON media_types.MediaTypeId = tracks.MediaTypeId
+INNER JOIN chinook.genres
+ON tracks.GenreId = genres.GenreId
+INNER JOIN chinook.albums
+ON tracks.AlbumId = albums.AlbumId
+ORDER BY Genre, Artist , Album;
+
+# Show the total sales made by each sales agent.
+SELECT
+employees.LastName,
+employees.FirstName,
+ROUND(SUM(invoices.Total),2) AS TotalSales
+FROM chinook.employees
+INNER JOIN chinook.customers
+ON employees.EmployeeId = customers.SupportRepId
+INNER JOIN chinook.invoices
+ON customers.CustomerId = invoices.CustomerId
+WHERE employees.Title = 'Sales Support Agent'
+GROUP BY employees.EmployeeId;
+
+# Which sales agent made the most dollars in sales in 2009?
+SELECT
+employees.LastName,
+employees.FirstName,
+ROUND(SUM(invoices.Total),2) AS TotalSales
+FROM chinook.employees
+INNER JOIN chinook.customers
+ON employees.EmployeeId = customers.SupportRepId
+INNER JOIN chinook.invoices
+ON customers.CustomerId = invoices.CustomerId
+WHERE employees.Title = 'Sales Support Agent'
+AND invoices.InvoiceDate LIKE '2009%'
+GROUP BY employees.EmployeeId
+ORDER BY TotalSales DESC 
+LIMIT 1;
+
+# Show all album titles and their artist
+SELECT 
+albums.Title AS Album,
+artists.Name AS Artist
+FROM chinook.albums
+INNER JOIN chinook.artists
+ON albums.ArtistId = artists.ArtistId
+ORDER BY Artist;
+
+# Show me all the customer information on customers whose phone numbers we have on file
+SELECT *
+FROM chinook.customers
+WHERE Phone IS NOT NULL;
+
+# Query a list of all the employees whose birthdays are in September
+SELECT
+employees.LastName,
+employees.FirstName,
+employees.BirthDate
+FROM chinook.employees
+WHERE employees.BirthDate LIKE '%-09-%';
